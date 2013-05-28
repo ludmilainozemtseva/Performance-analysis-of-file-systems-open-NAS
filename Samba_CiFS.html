@@ -1,0 +1,276 @@
+
+                            SPECsfs2008_cifs Result                            
+
+================================================================================
+
+     Acme Servers :  AM4G Failover Cluster / Disks are Us D9000x
+ SPECsfs2008_cifs =  73145 Ops/Sec (Overall Response Time = 4.31 msec)
+
+================================================================================
+                                  Performance                                  
+                                  ===========                                  
+
+     Throughput           Response    
+      (ops/sec)            (msec)     
+--------------------- ----------------
+        6578                0.8      
+        16474               1.4     
+        25333               1.7      
+        31827               2.1      
+        36121               2.4      
+        45479               2.9      
+        50713               4.0      
+        59686               5.6      
+        64050               7.2      
+        73145               8.5     
+
+================================================================================
+                          Product and Test Information                          
+                          ============================                          
+
+          Tested By Acme Servers
+       Product Name AM4G Failover Cluster / Disks are Us D9000x
+ Hardware Available January 2008
+ Software Available January 2008
+        Date Tested January 2008
+ SFS License Number 1234
+ Licensee Locations 110 Main St
+                    USA
+
+The Acme Servers AMG system is a multi-processor cluster system providing
+combined NFS, CIFS, and FTP services to high-speed Ethernet networks. The
+cluster tested here consists of two active file servers that each provide 12
+Jumbo-frame capable Gigabit Ethernet interfaces. The AMG is a gateway to SAN
+storage. It does not provide any storage itself.
+
+                        Configuration Bill of Materials                        
+                        ===============================                        
+
+Ite                                           
+  m                         Model/
+ No Qty Type     Vendor     Name   Description                                  
+--- --- ----     ------     ------ -----------
+  1   1 Server   Acme       AM4G   Acme Gateway Network Attached Storage System
+                 Servers           running AOS version 5.3 software. Each AM4G
+                                   system contains two file servers.
+  2   2 Disk Con Disks are  DP9000 Disk Processor Enclosure running DaU
+        troller  Us                operating environment version 14.92
+  3  20 Disk Enc Disks are  DAE9   Disks are Us Disk Array Enclosure
+        losure   Us
+  4 202 Disk     Disks are  D14610 Oceandoor Dual Ported 146GB 10K RPM Fibre
+                 Us                Channel Disks
+  5   1 FC       Blockade   3800   32 port Fibre Channel Switch
+        Switch
+
+                                Server Software                                
+                                ===============                                
+
+ OS Name and Version AOS 5.3
+      Other Software DaU operating environment version 14.92
+ Filesystem Software AOS 5.3
+
+                                 Server Tuning                                 
+                                 =============                                 
+
+Name              Value  Description
+----              -----  -----------
+Number of CIFS    128    The number of CIFS threads has been increased to 128 by
+Threads                  editing /etc/cifsd
+
+                              Server Tuning Notes                              
+                              -------------------                              
+
+File server tuning:
+fast=yes (go fast)
+
+                             Disks and Filesystems                             
+                             =====================                             
+
+                                                                 Number         
+                                                                     of   Usable
+Description                                                       Disks     Size
+-----------                                                      ------ --------
+This set of 192 disks is divided into 64 3-disk RAID-0 groups       192  27.4 TB
+that are each exported as a single LUN. All data file systems                   
+reside on these disks.                                                          
+This set of disks consists of 2 5-disk RAID-5 groups that are        10   1.1 TB
+each exported as a single LUN. These disks are for system use                   
+Total                                                               202  28.5 TB
+
+       Number of Filesystems 2
+     Total Exported Capacity 27 GB
+             Filesystem Type AcmeFS
+ Filesystem Creation Options Default
+           Filesystem Config Each filesystem is striped (8KB elementsize),
+                             across 96 disks (32 LUNs) for fs1 and fs2
+                Fileset Size 357.8 GB
+
+Each D9000 contained 101 disks that were configured into 32 three-disk RAID-0
+groups plus one five-disk RAID-5 group. The stripe size for all RAID-0 LUNs was
+8KB and each LUN was 15GB. The filesystem named fs1 was built on a volume made
+by striping across 32 LUNs on the first D9000. The filesystem named fs2 was
+built on a volume made by striping across 32 LUNs on the second D9000. The
+default location and size was used for all file servers.
+
+                             Network Configuration                             
+                             =====================                             
+
+                          Number of      
+Item                        Ports  
+  No     Network Type       Used    Notes                                       
+----     ------------     --------- -----
+   1    Jumbo Gigabit         2     This is the network interface used on the
+           Ethernet                 first file server.
+   2    Jumbo Gigabit         2     This is the network interface used on the
+           Ethernet                 second file server.
+
+                          Network Configuration Notes                          
+                          ---------------------------                          
+
+All network interfaces were connected to a Sasco 6550 switch.
+
+                               Benchmark Network                               
+                               =================                               
+
+An MTU size of 9000 was set for all connections to the switch. Each M4G file
+server was connected to the network via 2 ports. The LG1 class workload machines
+were connected with one port. The LG2 class workload machines were connected
+with two ports.
+
+                              Processing Elements                              
+                              ===================                              
+
+Item                                                                       
+  No Qty Type  Description                              Processing Function     
+---- --- ----  -----------                              -------------------
+   1   4  CPU  Some Microsystems Quad-core Spar V 20    CIFS protocol, AcmeFS
+               GHz 2 MB shared L2 cache each.           filesystem
+   2   2 ASIC  Zailinks 8273 @ 1.5 GHz                  RAID processing
+   3   4  TOE  E8172 Boardcom TCP Offload Engine        TCP/IP/Ethernet
+
+                            Processing Element Notes                            
+                            ------------------------                            
+
+Each file server has two physical processors.
+
+                                     Memory                                     
+                                     ======                                     
+
+                                    Size in    Number of              Nonvolatil
+Description                           GB       Instances    Total GB      e    
+-----------                        --------- -------------- --------  ----------
+File server main memory                4           2            8         V    
+Disk array controller main memory      4           4           16         NV    
+Grand Total Memory Gigabytes                                   24               
+
+                                  Memory Notes                                  
+                                  ------------                                  
+
+Each storage array has dual disk array controller units that work as an
+active-active failover pair. The mirrored write cache is backed up with a
+battery unit capable of saving the write cache to disk in the event of a power
+failure. In the event of a storage array failure, the second disk array
+controller unit is capable of saving all state that was managed by the first
+(and vise versa), even with a simultaneous power failure. When one of the disk
+array controllers or battery units are off-line, the system turns off the write
+cache and writes directly to disk before acknowledging any write operations. The
+battery unit can support the retention of data for 2 minutes which is sufficient
+to write all necessary data twice. Disk array controller A could have written
+99% of its memory to disk and then fail. In that case disk array controller B
+has enough battery to store its copy of A's data as well as its own.
+
+                                 Stable Storage                                 
+                                 ==============                                 
+
+The Acme NAS system software uses a logging file system. In this configuration,
+NFS stable write and commit operations are not acknowledged until after the
+Disks are Us storage system has acknowledged that the related data are
+redundantly stored on a pair of disk array controllers or is stored on disk in
+the case of an off-line disk array controller or battery.
+
+                     System Under Test Configuration Notes                     
+                     =====================================                     
+
+This is a description of the picture of the system.
+
+                               Other System Notes                               
+                               ==================                               
+
+Since both file servers were used, there was no standby available for failover.
+
+                       Test Environment Bill of Materials                       
+                       ==================================                       
+
+Item                     Model/               
+  No Qty Vendor          Name      Description                                  
+---- --- ------          --------- -----------
+   1   3 Some            SM 220R   Workstation with 512MB RAM and the Xubuntu
+         Microsystems              operating system
+   2   3 Some            SM 220R   Workstation with 1GB RAM and the Xubuntu
+         Microsystems              operating system
+
+                                Load Generators                                
+                                ===============                                
+
+LG Type Name                  LG1
+BOM Item #                    1
+Processor Name                Some Microsystems Spar
+Processor Speed               2 GHz
+Number of Processors (chips)  1
+Number of Cores/Chip          2
+Memory Size                   0.5 GB
+Operating System              Xubuntu
+Network Type                  1 x Boardcom 1234
+
+LG Type Name                  LG2
+BOM Item #                    2
+Processor Name                Some Microsystems Spar
+Processor Speed               2 GHz
+Number of Processors (chips)  1	
+Number of Cores/Chip          2
+Memory Size                   1 GB
+Operating System              Xubuntu
+Network Type                  2 x Boardcom 1234
+
+                       Load Generator (LG) Configuration                       
+                       =================================                       
+
+                              Benchmark Parameters                              
+                              --------------------                              
+
+ Network Attached Storage Type CIFS
+     Number of Load Generators 6
+    Number of Processes per LG 6
+
+                             Testbed Configuration                             
+                             ---------------------                             
+
+LG No  LG Type  Network  Target Filesystems  Notes
+-----  -------  -------  ------------------  -----
+1..3   LG1      1        fs1,fs2             N/A
+4..6   LG2      1        fs1,fs2             N/A
+
+                       Load Generator Configuration Notes                       
+                       ----------------------------------                       
+
+Both filesystems were mounted on all clients, which were connected to the same
+physical and logical network.
+
+                         Uniform Access Rule Compliance                         
+                         ==============================                         
+
+Each client has the same file system mounted from each of the two active file
+servers.
+
+                                  Other Notes                                  
+                                  ===========                                  
+
+Failover is not supported in this configuration because both file servers are
+active with no standby configured.
+
+The DP9000 was configured with 2GB write cache and 512MB read cache.
+
+================================================================================
+Generated on Sat May 25 23:27:45 2013 by SPECsfs2008 ASCII Formatter
+Copyright (C) 1997-2008 Standard Performance Evaluation Corporation
+
